@@ -1,0 +1,39 @@
+local DataStoreService = game:GetService("DataStoreService")
+local myDataStore = DataStoreService:GetDataStore("myDataStore")
+
+
+game.Players.PlayerAdded:Connect(function(player)
+	local leaderstats = Instance.new("Folder")
+	leaderstats.Name = "leaderstats"
+	leaderstats.Parent = player
+
+	local Time = Instance.new("IntValue")
+	Time.Name = "Time"
+	Time.Parent = leaderstats
+
+	local playerUserId = "Player"..player.UserId
+
+	local data 
+
+	local success, errormessage = pcall(function()
+		data = myDataStore:GetAsync(playerUserId) 
+	end)
+
+
+	if success then
+		Time.Value = data  --loads data when player joins
+	end
+
+	while wait(1) do
+		player.leaderstats.Time.Value = player.leaderstats.Time.Value + 1 --makes time go up by one every second
+	end
+end)
+
+game.Players.PlayerRemoving:Connect(function(player)
+	local playerUserId = "Player"..player.UserId
+
+	local data = player.leaderstats.Time.Value
+
+	myDataStore:SetAsync(playerUserId, data)           --saves data when player leaves game
+
+end)
